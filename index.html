@@ -1,0 +1,1101 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOMKIT – Gọn một ROOM, đủ cả KIT.</title>
+    <meta name="description"
+        content="ROOMKIT giúp sinh viên và người trẻ sống trọ dễ dàng lựa chọn các bộ sản phẩm cần thiết để chuẩn bị và sắp xếp không gian sống.">
+
+    <meta property="og:title" content="ROOMKIT – Gọn một ROOM, đủ cả KIT.">
+    <meta property="og:description"
+        content="ROOMKIT giúp sinh viên và người trẻ sống trọ dễ dàng lựa chọn các bộ sản phẩm cần thiết.">
+    <link rel="icon" type="image/png" href="assets/images/logo-icon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        primary: '#17352D', beige: '#F4EFE6', cream: '#FBF8F2',
+                        accent: '#F28C52', softgreen: '#DCE8DE',
+                        textdark: '#1C2420', textmuted: '#6F766F',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- GSAP, ScrollTrigger, Lenis, SplitType -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/split-type"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body
+    class="bg-beige text-textdark font-sans antialiased overflow-x-hidden selection:bg-primary selection:text-white cursor-none">
+
+    <!-- PRELOADER -->
+    <div id="preloader"
+        class="fixed inset-0 bg-primary z-[100] flex flex-col items-center justify-center text-white origin-top">
+        <div class="overflow-hidden mb-6 flex flex-col items-center">
+            <img src="assets/images/logo-light.png" alt="ROOMKIT"
+                class="h-28 md:h-36 w-auto object-contain loader-text mb-2">
+        </div>
+        <div class="w-48 h-[2px] bg-white/20 rounded-full overflow-hidden">
+            <div id="loader-bar" class="h-full bg-accent w-0"></div>
+        </div>
+        <div id="loader-percent" class="mt-4 font-bold text-sm text-softgreen/80">0%</div>
+    </div>
+
+    <!-- CUSTOM CURSOR -->
+    <div id="custom-cursor"
+        class="fixed top-0 left-0 w-4 h-4 bg-accent rounded-full pointer-events-none z-[9999] mix-blend-exclusion transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-[0px] text-primary font-bold uppercase tracking-widest whitespace-nowrap overflow-hidden transition-all duration-300 ease-out">
+    </div>
+    <div id="cursor-follower"
+        class="fixed top-0 left-0 w-12 h-12 border border-accent rounded-full pointer-events-none z-[9998] transform -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-out">
+    </div>
+
+    <!-- GRAIN OVERLAY -->
+    <div class="fixed inset-0 pointer-events-none z-[99] opacity-[0.03] mix-blend-multiply"
+        style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');">
+    </div>
+
+    <!-- HEADER -->
+    <header id="header"
+        class="fixed top-0 left-0 w-full z-50 transition-all duration-300 py-3.5 bg-beige/85 backdrop-blur-md border-b border-softgreen/30 text-primary">
+        <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl flex items-center justify-between">
+            <a href="#" class="flex items-center group hover-target" data-cursor="HOME">
+                <img src="assets/images/logo-horizontal.png" alt="ROOMKIT – Gọn một ROOM, đủ cả KIT"
+                    class="h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+            </a>
+
+            <nav class="hidden lg:flex items-center gap-8 font-semibold text-sm">
+                <a href="#"
+                    class="nav-link relative hover-target group overflow-hidden text-primary hover:text-accent transition-colors">
+                    <span>Trang chủ</span>
+                    <div
+                        class="absolute bottom-0 left-0 w-full h-[2px] bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300">
+                    </div>
+                </a>
+                <a href="#kits"
+                    class="nav-link relative hover-target group overflow-hidden text-primary hover:text-accent transition-colors">
+                    <span>KIT sản phẩm</span>
+                    <div
+                        class="absolute bottom-0 left-0 w-full h-[2px] bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300">
+                    </div>
+                </a>
+                <a href="#before-after"
+                    class="nav-link relative hover-target group overflow-hidden text-primary hover:text-accent transition-colors">
+                    <span>Biến đổi phòng</span>
+                    <div
+                        class="absolute bottom-0 left-0 w-full h-[2px] bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300">
+                    </div>
+                </a>
+                <a href="#starter-offer"
+                    class="nav-link relative hover-target group overflow-hidden text-primary hover:text-accent transition-colors">
+                    <span>Starter Kit</span>
+                    <div
+                        class="absolute bottom-0 left-0 w-full h-[2px] bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300">
+                    </div>
+                </a>
+                <a href="#faq"
+                    class="nav-link relative hover-target group overflow-hidden text-primary hover:text-accent transition-colors">
+                    <span>FAQ</span>
+                    <div
+                        class="absolute bottom-0 left-0 w-full h-[2px] bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300">
+                    </div>
+                </a>
+            </nav>
+
+            <div class="hidden lg:flex items-center gap-6">
+                <button id="nav-search-btn" class="relative hover-target group magnetic-btn text-primary p-2 mr-2"
+                    data-cursor="SEARCH">
+                    <span class="magnetic-text block"><i
+                            class="ph ph-magnifying-glass text-2xl group-hover:text-accent transition-colors"></i></span>
+                </button>
+                <button id="nav-track-btn" class="relative hover-target group magnetic-btn text-primary p-2"
+                    data-cursor="TRACK">
+                    <span class="magnetic-text block"><i
+                            class="ph ph-truck text-2xl group-hover:text-accent transition-colors"></i></span>
+                </button>
+                <button id="cart-btn" class="relative hover-target group magnetic-btn text-primary p-2"
+                    data-cursor="CART">
+                    <span class="magnetic-text block"><i
+                            class="ph ph-shopping-cart text-2xl group-hover:text-accent transition-colors"></i></span>
+                    <span id="cart-badge"
+                        class="absolute -top-1 -right-1 w-5 h-5 bg-accent text-white text-xs font-bold flex items-center justify-center rounded-full scale-0 transition-transform">0</span>
+                </button>
+                <a href="#kits"
+                    class="magnetic-btn hover-target px-6 py-2.5 rounded-full font-bold text-sm relative overflow-hidden group bg-primary text-white hover:bg-accent transition-colors duration-300 shadow-md"
+                    data-cursor="EXPLORE">
+                    <span class="relative z-10 magnetic-text block">KHÁM PHÁ KIT</span>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-4 lg:hidden text-primary">
+                <button id="mobile-search-btn" class="relative p-2 mr-2 hover-target text-primary" data-cursor="SEARCH">
+                    <i class="ph ph-magnifying-glass text-2xl"></i>
+                </button>
+                <button id="mobile-track-btn" class="relative p-2 hover-target text-primary" data-cursor="TRACK">
+                    <i class="ph ph-truck text-2xl"></i>
+                </button>
+                <button id="mobile-cart-btn" class="relative p-2 hover-target" data-cursor="CART">
+                    <i class="ph ph-shopping-cart text-2xl"></i>
+                    <span id="mobile-cart-badge"
+                        class="absolute top-0 right-0 w-5 h-5 bg-accent text-white text-xs font-bold flex items-center justify-center rounded-full scale-0 transition-transform">0</span>
+                </button>
+                <button id="mobile-menu-btn" class="text-3xl hover-target p-1" data-cursor="MENU">
+                    <i class="ph ph-list"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu"
+        class="fixed inset-0 bg-primary z-40 transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] pt-8 px-6 flex flex-col gap-6 text-white">
+        <div class="flex items-center justify-between pb-6 border-b border-white/10">
+            <img src="assets/images/logo-horizontal-light.png" alt="ROOMKIT" class="h-10 w-auto object-contain">
+            <button id="close-mobile-menu-btn" class="text-3xl text-white hover:text-accent p-2"><i
+                    class="ph ph-x"></i></button>
+        </div>
+        <nav class="flex flex-col gap-5 text-2xl font-bold">
+            <a href="#" class="mobile-link hover:text-accent transition-colors">Trang chủ</a>
+            <a href="#kits" class="mobile-link hover:text-accent transition-colors">KIT sản phẩm</a>
+            <a href="#before-after" class="mobile-link hover:text-accent transition-colors">Biến đổi phòng</a>
+            <a href="#starter-offer" class="mobile-link hover:text-accent transition-colors">Starter Kit</a>
+            <a href="#faq" class="mobile-link hover:text-accent transition-colors">FAQ</a>
+        </nav>
+        <div class="mt-auto pb-12">
+            <a href="#kits"
+                class="mobile-link w-full block text-center bg-accent text-white py-4 rounded-xl font-bold text-lg shadow-md">KHÁM
+                PHÁ KIT</a>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden bg-beige" id="hero-section">
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <img src="assets/images/roomkit-hero.jpg" alt="Hero Background"
+                class="w-full h-full object-cover opacity-20 scale-110" id="hero-bg-img">
+            <div class="absolute inset-0 bg-gradient-to-b from-beige/90 via-beige/80 to-beige"></div>
+        </div>
+
+        <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+                <div class="z-10 max-w-2xl hero-content">
+                    <div class="hero-eyebrow overflow-hidden mb-6">
+                        <div
+                            class="inline-flex items-center gap-2 px-3 py-1 bg-primary text-white rounded-full text-xs font-bold uppercase tracking-wider transform translate-y-full">
+                            <i class="ph-fill ph-sparkle text-accent"></i> SMART LIVING CONCEPT
+                        </div>
+                    </div>
+
+                    <h1
+                        class="hero-title text-[2.25rem] md:text-[3.5rem] lg:text-[4.5rem] font-extrabold text-primary leading-[1.5] tracking-tight mb-8">
+                        GỌN MỘT ROOM<br>ĐỦ CẢ KIT.
+                    </h1>
+
+                    <div class="hero-desc overflow-hidden mb-10 max-w-lg">
+                        <p class="text-lg md:text-xl text-textmuted leading-relaxed">
+                            Từ góc học tập đến những vật dụng thiết yếu, ROOMKIT giúp bạn chuẩn bị phòng trọ đơn giản và
+                            phong cách hơn.
+                        </p>
+                    </div>
+
+                    <div class="hero-ctas flex flex-col sm:flex-row gap-4 overflow-hidden">
+                        <!-- Nút 1: Đánh vào nhóm Tân sinh viên/Mới chuyển trọ -->
+                        <a href="#starter-offer"
+                            class="magnetic-btn hover-target bg-primary text-white px-8 py-4 rounded-full font-bold text-center group relative overflow-hidden shadow-xl"
+                            data-cursor="CHỌN">
+                            <span
+                                class="absolute inset-0 bg-accent transform scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]"></span>
+                            <span class="relative z-10 magnetic-text flex items-center justify-center gap-2 block">
+                                MÌNH MỚI CHUYỂN TRỌ <i
+                                    class="ph-bold ph-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </span>
+                        </a>
+
+                        <!-- Nút 2: Đánh vào nhóm muốn dọn dẹp không gian -->
+                        <a href="#kits"
+                            class="magnetic-btn hover-target bg-transparent border border-primary text-primary px-8 py-4 rounded-full font-bold text-center group relative overflow-hidden"
+                            data-cursor="XEM">
+                            <span
+                                class="absolute inset-0 bg-primary transform scale-y-0 origin-bottom group-hover:scale-y-100 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]"></span>
+                            <span
+                                class="relative z-10 group-hover:text-white transition-colors duration-500 magnetic-text block">
+                                MÌNH MUỐN LÀM GỌN PHÒNG
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="relative hero-image-wrapper">
+                    <div class="absolute top-1/4 -right-12 w-64 h-64 bg-accent rounded-full opacity-20 blur-3xl parallax-shape"
+                        data-speed="0.05"></div>
+                    <div class="absolute -bottom-10 -left-12 w-72 h-72 bg-softgreen rounded-full opacity-60 blur-3xl parallax-shape"
+                        data-speed="-0.05"></div>
+
+                    <div class="relative rounded-[2rem] overflow-hidden shadow-2xl group border-[6px] border-white/50 backdrop-blur-sm hero-main-img"
+                        style="clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);">
+                        <img src="assets/images/roomkit-hero.jpg" alt="Phòng trọ gọn gàng với ROOMKIT"
+                            class="w-full h-auto object-cover aspect-[4/5] md:aspect-square lg:aspect-[4/5] transform scale-125 transition-transform duration-[2s] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-100">
+
+                        <div
+                            class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-700">
+                        </div>
+
+                        <!-- Floating Badges -->
+                        <div
+                            class="absolute top-8 right-8 bg-white/95 backdrop-blur-md px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 float-badge-1">
+                            <i class="ph-fill ph-check-circle text-primary text-xl"></i>
+                            <span class="font-bold text-sm text-primary">Tiết kiệm 50% thời gian</span>
+                        </div>
+                        <div
+                            class="absolute bottom-8 left-8 bg-primary/95 backdrop-blur-md px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 float-badge-2">
+                            <i class="ph-fill ph-package text-accent text-xl"></i>
+                            <span class="font-bold text-sm text-white">100+ Sản phẩm thiết yếu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div
+            class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 hero-scroll opacity-0">
+            <span class="text-xs font-bold tracking-widest text-primary uppercase"></span>
+            <div class="w-[1px] h-12 bg-primary/20 relative overflow-hidden">
+                <div
+                    class="absolute top-0 left-0 w-full h-full bg-primary animate-[scrollDown_1.5s_ease-in-out_infinite]">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL PROOF WITH MARQUEE -->
+    <section class="py-24 bg-white relative overflow-hidden">
+        <div class="w-full bg-primary py-4 mb-20 transform -rotate-2 scale-110 shadow-lg">
+            <div class="marquee-container flex whitespace-nowrap overflow-hidden">
+                <div
+                    class="marquee-content flex gap-8 items-center text-accent font-extrabold text-xl md:text-2xl uppercase tracking-widest">
+                    <span>• TIỆN LỢI & GỌN GÀNG</span> <span>• TỐI ƯU KHÔNG GIAN</span> <span>• TIẾT KIỆM CHI PHÍ</span>
+                    <span>• SMART LIVING</span> <span>• THIẾT KẾ CHO PHÒNG TRỌ</span> <span>• ĐẦY ĐỦ VẬT DỤNG</span>
+                    <span>• TIỆN LỢI & GỌN GÀNG</span> <span>• TỐI ƯU KHÔNG GIAN</span> <span>• TIẾT KIỆM CHI PHÍ</span>
+                    <span>• SMART LIVING</span> <span>• THIẾT KẾ CHO PHÒNG TRỌ</span> <span>• ĐẦY ĐỦ VẬT DỤNG</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-24 gsap-stagger-group">
+                <div class="text-center group gsap-stagger-item">
+                    <div
+                        class="w-20 h-20 mx-auto bg-softgreen rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-accent transition-all duration-500">
+                        <i
+                            class="ph-duotone ph-check-square-offset text-4xl text-primary group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="font-bold text-xl text-primary mb-2">DỄ CHỌN</h3>
+                    <p class="text-textmuted">Sản phẩm chia theo KIT</p>
+                </div>
+                <div class="text-center group gsap-stagger-item">
+                    <div
+                        class="w-20 h-20 mx-auto bg-softgreen rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-accent transition-all duration-500">
+                        <i
+                            class="ph-duotone ph-package text-4xl text-primary group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="font-bold text-xl text-primary mb-2">GỌN HƠN</h3>
+                    <p class="text-textmuted">Mua theo nhu cầu</p>
+                </div>
+                <div class="text-center group gsap-stagger-item">
+                    <div
+                        class="w-20 h-20 mx-auto bg-softgreen rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-accent transition-all duration-500">
+                        <i
+                            class="ph-duotone ph-lightning text-4xl text-primary group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="font-bold text-xl text-primary mb-2">TIỆN HƠN</h3>
+                    <p class="text-textmuted">Trải nghiệm đơn giản</p>
+                </div>
+                <div class="text-center group gsap-stagger-item">
+                    <div
+                        class="w-20 h-20 mx-auto bg-softgreen rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-accent transition-all duration-500">
+                        <i
+                            class="ph-duotone ph-student text-4xl text-primary group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="font-bold text-xl text-primary mb-2">PHÙ HỢP</h3>
+                    <p class="text-textmuted">Dành cho sinh viên</p>
+                </div>
+            </div>
+
+            <!-- Stats with Counter effect -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 border-y border-gray-100 py-12 gsap-stagger-group">
+                <div class="text-center gsap-stagger-item">
+                    <span
+                        class="text-[1.75rem] md:text-[2rem] lg:text-[2.5rem] font-extrabold text-primary block mb-2 counter"
+                        data-target="4.8">0</span>
+                    <span class="text-sm font-bold uppercase tracking-wider text-textmuted">Đánh giá hài lòng</span>
+                </div>
+                <div
+                    class="text-center border-y md:border-y-0 md:border-x border-gray-100 py-8 md:py-0 gsap-stagger-item">
+                    <span
+                        class="text-[1.75rem] md:text-[2rem] lg:text-[2.5rem] font-extrabold text-primary block mb-2"><span
+                            class="counter" data-target="1000">0</span>+</span>
+                    <span class="text-sm font-bold uppercase tracking-wider text-textmuted">Đơn hàng hoàn tất</span>
+                </div>
+                <div class="text-center gsap-stagger-item">
+                    <span
+                        class="text-[1.75rem] md:text-[2rem] lg:text-[2.5rem] font-extrabold text-primary block mb-2"><span
+                            class="counter" data-target="2000">0</span>+</span>
+                    <span class="text-sm font-bold uppercase tracking-wider text-textmuted">Khách hàng tin chọn</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUCT KIT SHOWCASE -->
+    <section id="kits" class="py-32 bg-primary text-white relative">
+        <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-20">
+                <div class="max-w-2xl">
+                    <h2 class="text-[1.75rem] md:text-[2rem] lg:text-[2.5rem] font-extrabold mb-6 split-text">CHỌN KIT
+                        PHÙ HỢP.</h2>
+                    <p class="text-softgreen/80 text-xl font-light split-text">Các bộ sản phẩm được tuyển chọn tỉ mỉ
+                        theo từng nhu cầu cụ thể của không gian trọ.</p>
+                </div>
+                <div class="mt-8 md:mt-0">
+                    <div
+                        class="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center animate-[spin_10s_linear_infinite]">
+                        <svg viewBox="0 0 100 100" width="100" height="100">
+                            <defs>
+                                <path id="circle" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" />
+                            </defs><text font-size="12" fill="white" font-weight="bold" letter-spacing="3">
+                                <textPath href="#circle">ROOMKIT OFFICIAL STORE •</textPath>
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div id="kit-grid" class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Injected via JS with images -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ROOM TRANSFORMATION WITH CUSTOM CURSOR -->
+    <section id="before-after" class="py-32 bg-beige relative overflow-hidden">
+        <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-5xl text-center">
+            <h2 class="text-[1.75rem] md:text-[2rem] lg:text-[2.5rem] font-extrabold text-primary mb-6 split-text">SỰ
+                THAY ĐỔI RÕ RỆT</h2>
+            <p class="text-textmuted mb-16 max-w-xl mx-auto split-text">*Kéo slider để xem sự khác biệt không gian trước
+                và sau khi sắp xếp.</p>
+
+            <div class="relative w-full aspect-[4/3] md:aspect-[21/9] rounded-[2rem] overflow-hidden shadow-2xl hover-target cursor-none group gsap-scale-up"
+                id="ba-container" data-cursor="DRAG">
+                <!-- Before -->
+                <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1600&auto=format&fit=crop"
+                    class="absolute inset-0 w-full h-full object-cover" alt="Trước khi sắp xếp">
+                <div
+                    class="absolute top-6 left-6 bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-bold tracking-widest uppercase shadow-lg">
+                    Trước (Lộn xộn)</div>
+
+                <!-- After -->
+                <div id="ba-after" class="absolute inset-0 w-full h-full overflow-hidden"
+                    style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1600&auto=format&fit=crop"
+                        class="absolute inset-0 w-full h-full object-cover transform scale-105 group-hover:scale-100 transition-transform duration-1000"
+                        alt="Sau khi có ROOMKIT">
+                    <div
+                        class="absolute top-6 right-6 bg-primary text-white px-4 py-2 rounded-xl text-sm font-bold tracking-widest uppercase shadow-lg">
+                        Sau (ROOMKIT)</div>
+                </div>
+
+                <!-- Handle -->
+                <div id="ba-slider"
+                    class="absolute top-0 bottom-0 left-1/2 w-1 bg-white cursor-none transform -translate-x-1/2 flex items-center justify-center">
+                    <div
+                        class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-2xl text-primary text-2xl transition-transform duration-300">
+                        <i class="ph-bold ph-arrows-left-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OFFER & PRICE -->
+    <section id="starter-offer" class="py-32 bg-white relative overflow-hidden">
+        <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl relative z-10">
+            <div
+                class="bg-primary text-white rounded-[3rem] p-8 md:p-16 flex flex-col lg:flex-row items-center gap-16 shadow-2xl relative overflow-hidden gsap-scale-up">
+
+                <div class="absolute -top-32 -right-32 w-96 h-96 bg-accent rounded-full opacity-20 blur-3xl"></div>
+
+                <div class="w-full lg:w-1/2 relative group hover-target" data-cursor="VIEW"
+                    onclick="openStarterKitItems()">
+                    <div
+                        class="absolute inset-0 bg-accent rounded-[2rem] transform -rotate-3 scale-105 group-hover:rotate-0 transition-transform duration-500">
+                    </div>
+                    <img src="assets/images/kit-starter.jpg" alt="Starter Kit ROOMKIT"
+                        class="relative z-10 rounded-[2rem] w-full h-auto object-cover aspect-square shadow-2xl transform group-hover:scale-[0.98] transition-transform duration-500">
+                </div>
+
+                <div class="w-full lg:w-1/2 relative z-10">
+                    <div
+                        class="inline-block border border-white/30 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                        Gói khuyên dùng tốt nhất</div>
+                    <h2
+                        class="text-[1.75rem] md:text-[2rem] lg:text-[2.5rem] font-extrabold mb-4 leading-[1.5] split-text">
+                        SETUP PHÒNG GỌN HƠN, TỪ MỘT KIT.</h2>
+                    <h3 class="text-2xl font-bold text-accent mb-8">ROOMKIT STARTER KIT</h3>
+
+                    <div class="flex items-end gap-6 mb-10">
+                        <span class="text-4xl md:text-5xl font-extrabold">499.000₫</span>
+                        <div class="flex flex-col pb-1">
+                            <span class="text-xl text-softgreen/50 line-through">699.000₫</span>
+                            <span
+                                class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded text-xs font-bold uppercase">ƯU
+                                ĐÃI ĐẶC BIỆT</span>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-4 mb-12 text-lg text-softgreen/90">
+                        <li class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"><i
+                                    class="ph-bold ph-check text-white"></i></div> Gồm 15 món đồ cơ bản cần thiết cho
+                            phòng trọ
+                        </li>
+                        <li class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"><i
+                                    class="ph-bold ph-check text-white"></i></div> Tiết kiệm 200.000₫ so với việc mua lẻ
+                            từng món
+                        </li>
+                        <li class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"><i
+                                    class="ph-bold ph-gift text-white"></i></div> Tặng kèm túi vải ROOMKIT cao cấp
+                        </li>
+                    </ul>
+
+                    <button
+                        class="magnetic-btn hover-target bg-white text-primary px-10 py-5 rounded-full font-bold text-base md:text-lg hover:bg-accent hover:text-white transition-colors duration-300 shadow-xl flex items-center justify-center gap-3"
+                        onclick="addStarterKitToCart()" data-cursor="BUY">
+                        <span class="magnetic-text block flex items-center gap-2">CHỌN MUA NGAY <i
+                                class="ph-bold ph-shopping-bag"></i></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <!-- SHOP SECTION -->
+    <section id="shop" class="py-24 bg-white relative z-10">
+        <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <span class="text-accent font-bold tracking-widest uppercase text-sm mb-2 block">TỔNG MÓN RIÊNG
+                        LẺ</span>
+                    <h2 class="text-[1.75rem] md:text-[2rem] lg:text-[2.5rem] font-extrabold text-primary split-text">
+                        CỬA HÀNG SẢN PHẨM</h2>
+                </div>
+            </div>
+            <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                <!-- Products will be injected here -->
+            </div>
+        </div>
+    </section>
+    <section id="faq" class="py-32 bg-cream border-t border-gray-200">
+        <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-4xl">
+            <h2
+                class="text-[1.75rem] md:text-[2rem] lg:text-[2.5rem] font-extrabold text-primary mb-16 text-center split-text">
+                CÂU HỎI THƯỜNG GẶP</h2>
+            <div class="space-y-6" id="faq-container"></div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer
+        class="bg-primary text-white pt-24 pb-12 border-t border-white/10 rounded-t-[3rem] mt-[-2rem] relative z-10">
+        <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <div class="col-span-1 md:col-span-1">
+                    <a href="#" class="inline-block mb-4 group hover-target" data-cursor="HOME">
+                        <img src="assets/images/logo-horizontal-light.png" alt="ROOMKIT – Gọn một ROOM, đủ cả KIT"
+                            class="h-12 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+                    </a>
+                    <p class="text-softgreen/70 text-sm md:text-base italic mb-8">"Gọn một ROOM, đủ cả KIT."</p>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent transition-colors"><i
+                                class="ph-fill ph-facebook-logo text-xl"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent transition-colors"><i
+                                class="ph-fill ph-instagram-logo text-xl"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent transition-colors"><i
+                                class="ph-fill ph-tiktok-logo text-xl"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-lg md:text-xl mb-4 text-beige">Về ROOMKIT</h4>
+                    <ul class="space-y-3 text-softgreen/70 text-sm md:text-base">
+                        <li><a href="#kits" class="hover:text-accent transition-colors">Các bộ KIT</a></li>
+                        <li><a href="#before-after" class="hover:text-accent transition-colors">Biến đổi phòng</a></li>
+                        <li><a href="#starter-offer" class="hover:text-accent transition-colors">Starter Kit</a></li>
+                        <li><a href="#faq" class="hover:text-accent transition-colors">Hỏi đáp</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-lg md:text-xl mb-4 text-beige">Chính sách</h4>
+                    <ul class="space-y-3 text-softgreen/70 text-sm md:text-base">
+                        <li>Giao hàng toàn quốc trong 24-48h</li>
+                        <li>Đổi trả miễn phí trong 7 ngày</li>
+                        <li>Bảo hành chính hãng cho thiết bị</li>
+                        <li>Cam kết đúng số lượng và mẫu mã</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-lg md:text-xl mb-4 text-beige">Liên hệ <span
+                            class="text-xs bg-accent text-white px-2 py-1 rounded-full ml-2 align-middle">24/7</span>
+                    </h4>
+                    <ul class="space-y-4 text-softgreen/70 text-sm md:text-base">
+                        <li class="flex items-center gap-3"><i
+                                class="ph-fill ph-envelope-simple text-accent text-xl"></i> hello@roomkit.vn</li>
+                        <li class="flex items-center gap-3"><i class="ph-fill ph-phone text-accent text-xl"></i> 0901
+                            234 567</li>
+                        <li class="flex items-center gap-3"><i class="ph-fill ph-map-pin text-accent text-xl"></i> Làng
+                            Đại Học, TP. Hồ Chí Minh</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 text-center text-softgreen/50 text-sm">
+                <p>&copy; 2026 ROOMKIT. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="product-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-primary/90 backdrop-blur-xl transition-opacity modal-overlay cursor-pointer"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto flex items-center justify-center p-4">
+            <div class="relative transform overflow-hidden rounded-[2rem] bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-4xl"
+                id="modal-content-wrapper">
+                <button
+                    class="modal-close absolute top-6 right-6 w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full text-gray-500 hover:bg-primary hover:text-white transition-colors z-20 hover-target"
+                    data-cursor="CLOSE">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+                <div id="modal-content" class="flex flex-col md:flex-row"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART DRAWER -->
+    <div id="cart-drawer-overlay" class="fixed inset-0 bg-primary/80 backdrop-blur-md z-50 hidden transition-opacity">
+    </div>
+    <div id="cart-drawer"
+        class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] flex flex-col">
+        <div class="p-8 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="text-2xl font-bold text-primary flex items-center gap-3">Giỏ hàng <span
+                    class="bg-accent text-white text-xs px-2 py-1 rounded uppercase tracking-wider">ROOMKIT</span></h2>
+            <button id="close-cart-btn"
+                class="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full hover:bg-gray-200 transition-colors hover-target"
+                data-cursor="CLOSE">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-8 flex flex-col gap-6"></div>
+        <div class="p-8 border-t border-gray-100 bg-cream">
+            <div class="flex justify-between items-center mb-6 text-xl font-bold text-primary">
+                <span>Tổng cộng:</span>
+                <span id="cart-total">0₫</span>
+            </div>
+            <button id="checkout-btn"
+                class="hover-target w-full bg-primary text-white py-5 rounded-2xl font-bold text-base md:text-lg hover:bg-accent transition-colors shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
+                TIẾN HÀNH ĐẶT HÀNG
+            </button>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL (FORM) -->
+    <div id="checkout-modal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-primary/90 backdrop-blur-md transition-opacity" id="checkout-overlay"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div
+                    class="relative transform overflow-hidden rounded-[2rem] bg-white p-6 md:p-8 w-full max-w-lg shadow-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-primary">Thông tin đặt hàng</h2>
+                        <button id="close-checkout-btn"
+                            class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors"><i
+                                class="ph-bold ph-x text-xl"></i></button>
+                    </div>
+
+                    <form id="checkout-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-textdark mb-1">Họ và tên *</label>
+                            <input type="text" id="form-name" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                                placeholder="Nguyễn Văn A">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-textdark mb-1">Số điện thoại *</label>
+                            <input type="tel" id="form-phone" required pattern="[0-9]{10,11}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                                placeholder="0901 234 567">
+                            <p class="text-xs text-red-500 mt-1 hidden" id="phone-error">Vui lòng nhập số điện thoại hợp
+                                lệ.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-textdark mb-1">Địa chỉ giao hàng *</label>
+                            <textarea id="form-address" required rows="3"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                                placeholder="Số phòng, tên toà nhà/ký túc xá, đường, quận/huyện, tỉnh/thành phố"></textarea>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <p class="text-sm font-medium text-textdark mb-2">Đơn hàng của bạn:</p>
+                            <div id="checkout-summary" class="text-sm text-textmuted space-y-1"></div>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-accent text-white py-4 rounded-xl font-bold text-lg hover:bg-opacity-90 transition-colors shadow-lg mt-4">
+                            XÁC NHẬN ĐẶT HÀNG
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS TOAST -->
+    <div id="success-toast"
+        class="fixed top-8 left-1/2 transform -translate-x-1/2 bg-white px-8 py-5 rounded-2xl shadow-2xl z-[100] flex items-center gap-4 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] -translate-y-32 opacity-0 pointer-events-none border border-green-100">
+        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl">
+            <i class="ph-bold ph-check"></i>
+        </div>
+        <div>
+            <p class="font-bold text-primary text-lg">Thành công!</p>
+            <p class="text-textmuted" id="toast-message">Đã thêm vào giỏ hàng thành công.</p>
+        </div>
+    </div>
+
+    <!-- KIT BUILDER MODAL -->
+    <div id="kit-builder-modal"
+        class="fixed inset-0 z-[70] hidden bg-beige flex flex-col md:flex-row overflow-hidden transition-opacity duration-300 opacity-0">
+        <!-- HEADER MOBILE -->
+        <div class="md:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200 z-10">
+            <div>
+                <h2 id="kb-mobile-title" class="font-bold text-primary text-lg">Tạo Kit</h2>
+                <div id="kb-mobile-progress" class="text-xs text-textmuted">0/0 món</div>
+            </div>
+            <button
+                class="kb-close-btn w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full text-gray-500"><i
+                    class="ph-bold ph-x"></i></button>
+        </div>
+
+        <!-- LEFT: PRODUCTS -->
+        <div class="w-full md:w-3/5 lg:w-2/3 h-full flex flex-col bg-beige">
+            <!-- HEADER DESKTOP -->
+            <div
+                class="hidden md:flex items-center justify-between p-6 lg:p-8 bg-white/50 border-b border-softgreen/30 backdrop-blur-md z-10">
+                <div class="flex items-center gap-4">
+                    <button
+                        class="kb-close-btn w-10 h-10 flex items-center justify-center bg-white rounded-full text-primary hover:bg-accent hover:text-white transition-colors shadow-sm hover-target"
+                        data-cursor="CLOSE"><i class="ph-bold ph-arrow-left text-xl"></i></button>
+                    <div>
+                        <h2 id="kb-title" class="text-2xl font-extrabold text-primary">TỰ TẠO KIT CỦA BẠN</h2>
+                        <p class="text-sm text-textmuted">Chọn những món bạn thực sự cần. Bỏ những món bạn chưa cần.</p>
+                    </div>
+                </div>
+                <!-- Filters & Search -->
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <i
+                            class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-textmuted"></i>
+                        <input type="text" id="kb-search" placeholder="Tìm sản phẩm..."
+                            class="pl-9 pr-4 py-2 rounded-full border border-gray-200 text-sm focus:border-primary focus:outline-none w-48 hover-target">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY TABS -->
+            <div class="bg-white/50 border-b border-softgreen/30 px-4 md:px-8 py-3 flex gap-4 overflow-x-auto builder-scroll whitespace-nowrap z-10"
+                id="kb-categories">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- PRODUCT LIST -->
+            <div class="flex-1 overflow-y-auto builder-scroll p-4 md:p-8 relative">
+                <div id="kb-product-grid" class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    <!-- Products Injected -->
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: SUMMARY (DESKTOP) -->
+        <div
+            class="hidden md:flex w-full md:w-2/5 lg:w-1/3 h-full bg-white flex-col border-l border-gray-200 shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-20">
+            <div class="p-6 lg:p-8 border-b border-gray-100 flex-1 flex flex-col overflow-hidden">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h3 class="font-bold text-xl text-primary">Tóm tắt KIT</h3>
+                        <div id="kb-progress" class="text-sm font-semibold text-accent mt-1">Đã chọn 0 món</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-textmuted mb-1">Tổng cộng</div>
+                        <div id="kb-total-price" class="text-2xl md:text-3xl font-extrabold text-primary">0₫</div>
+                        <div id="kb-savings" class="text-sm font-bold text-emerald-500 mt-1 hidden">Tiết kiệm 0₫</div>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto builder-scroll pr-2 -mr-2 space-y-4" id="kb-summary-list">
+                    <!-- Summary items -->
+                </div>
+
+                <div id="kb-recommendations" class="mt-6 pt-6 border-t border-gray-100 hidden">
+                    <h4 class="text-xs font-bold text-textmuted uppercase tracking-wider mb-3">ROOMKIT Gợi ý cho bạn
+                    </h4>
+                    <div id="kb-rec-list" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <div class="p-6 lg:p-8 bg-cream border-t border-gray-200">
+                <button id="kb-confirm-btn"
+                    class="w-full bg-primary text-white py-4 rounded-xl font-bold text-base md:text-lg hover:bg-accent transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover-target flex justify-center items-center gap-2"
+                    data-cursor="XÁC NHẬN">
+                    XONG, KIỂM TRA KIT <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- BOTTOM: MOBILE STICKY SUMMARY -->
+        <div
+            class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-20 pb-safe">
+            <!-- Mobile Drawer -->
+            <div id="kb-mobile-drawer"
+                class="absolute bottom-full left-0 w-full bg-white border-t border-gray-200 transition-transform duration-300 transform translate-y-full flex flex-col max-h-[50vh]">
+                <div class="p-3 bg-gray-50 flex justify-center border-b border-gray-200" id="kb-mobile-drawer-toggle">
+                    <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 space-y-3" id="kb-mobile-summary-list"></div>
+            </div>
+
+            <div class="p-4 flex items-center justify-between bg-white relative z-10" id="kb-mobile-bottom-bar">
+                <div class="flex-1"
+                    onclick="document.getElementById('kb-mobile-drawer').classList.toggle('translate-y-full')">
+                    <div class="text-xs text-textmuted">Tổng cộng <i class="ph-bold ph-caret-up ml-1"></i></div>
+                    <div id="kb-mobile-total" class="text-xl font-extrabold text-primary">0₫</div>
+                </div>
+                <button id="kb-mobile-confirm-btn"
+                    class="bg-primary text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md disabled:opacity-50">
+                    XONG
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- KIT CONFIRMATION MODAL -->
+    <div id="kit-confirm-modal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-primary/90 backdrop-blur-md kc-close-overlay"></div>
+        <div
+            class="relative bg-white rounded-[2rem] w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="p-6 md:p-8 border-b border-gray-100 flex justify-between items-center bg-cream">
+                <h2 class="text-2xl font-bold text-primary">Xác nhận KIT của bạn</h2>
+                <button
+                    class="kc-close-btn w-10 h-10 flex items-center justify-center bg-white rounded-full text-gray-500 hover:text-primary shadow-sm hover-target"><i
+                        class="ph-bold ph-x"></i></button>
+            </div>
+            <div class="p-6 md:p-8 flex-1 overflow-y-auto">
+                <div class="flex items-center gap-4 mb-6 p-4 bg-softgreen/30 rounded-2xl border border-softgreen">
+                    <div
+                        class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary text-2xl shadow-sm">
+                        <i class="ph-fill ph-package"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-primary" id="kc-title">KIT Phòng Ngủ (Tùy chỉnh)</h3>
+                        <p class="text-sm text-textmuted" id="kc-count">10 món sản phẩm</p>
+                    </div>
+                </div>
+                <div class="space-y-2 mb-6" id="kc-items"></div>
+                <div class="border-t border-gray-200 pt-4 flex justify-between items-end">
+                    <span class="font-bold text-textdark">Tổng thanh toán:</span>
+                    <span class="text-2xl md:text-3xl font-extrabold text-accent" id="kc-total">0₫</span>
+                </div>
+            </div>
+            <div class="p-6 md:p-8 bg-gray-50 flex gap-4">
+                <button
+                    class="kc-close-btn flex-1 py-4 font-bold text-primary bg-white border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors">CHỈNH
+                    SỬA LẠI</button>
+                <button id="kc-add-cart-btn"
+                    class="flex-1 py-4 font-bold text-white bg-primary rounded-xl hover:bg-accent transition-colors shadow-lg">THÊM
+                    KIT VÀO GIỎ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Single Product Modal -->
+    <div id="single-product-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-primary/80 backdrop-blur-sm sp-close-overlay"></div>
+        <div class="relative bg-white rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl flex flex-col">
+            <button
+                class="sp-close-btn absolute top-4 right-4 w-10 h-10 bg-white/80 rounded-full flex items-center justify-center text-primary z-10 hover:bg-white shadow-sm hover-target"><i
+                    class="ph-bold ph-x"></i></button>
+            <div class="aspect-square bg-gray-50 relative">
+                <img id="sp-image" src="" class="w-full h-full object-cover">
+                <div id="sp-category"
+                    class="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-primary shadow-sm">
+                    Category</div>
+            </div>
+            <div class="p-6 md:p-8">
+                <h2 id="sp-name" class="text-2xl font-bold text-primary mb-2">Tìm sản phẩm</h2>
+                <p id="sp-desc" class="text-textmuted text-sm mb-6 line-clamp-3">Mã sản phẩm</p>
+
+                <div class="flex items-end justify-between mb-8">
+                    <div>
+                        <span class="block text-sm text-textmuted mb-1">Giá bán</span>
+                        <div id="sp-price" class="text-3xl font-extrabold text-accent">0đ</div>
+                    </div>
+                    <div class="flex items-center border-2 border-gray-100 rounded-xl h-12 bg-white">
+                        <button
+                            class="w-10 h-full flex justify-center items-center text-textmuted hover:text-primary transition-colors"
+                            onclick="updateSpQty(-1)"><i class="ph-bold ph-minus"></i></button>
+                        <span id="sp-qty" class="w-10 text-center font-bold text-lg text-primary">1</span>
+                        <button
+                            class="w-10 h-full flex justify-center items-center text-textmuted hover:text-primary transition-colors"
+                            onclick="updateSpQty(1)"><i class="ph-bold ph-plus"></i></button>
+                    </div>
+                </div>
+
+                <button id="sp-add-btn"
+                    class="w-full bg-primary text-white py-4 rounded-xl font-bold text-base hover:bg-accent transition-colors shadow-lg flex items-center justify-center gap-2 hover-target">
+                    <i class="ph-bold ph-shopping-cart-simple"></i> THÃŠM VÃ€O GIá»Ž
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Global Search Overlay -->
+    <div id="global-search-overlay" class="fixed inset-0 z-[100] hidden bg-white flex flex-col">
+        <div
+            class="container mx-auto px-4 md:px-6 lg:px-8 max-w-4xl py-6 border-b border-gray-100 flex items-center gap-4">
+            <i class="ph-bold ph-magnifying-glass text-2xl text-textmuted"></i>
+            <input type="text" id="global-search-input"
+                class="flex-1 bg-transparent text-xl md:text-3xl font-bold text-primary outline-none placeholder-gray-300"
+                placeholder="Tìm sản phẩm">
+            <button id="close-search-btn" class="text-textmuted hover:text-primary p-2 hover-target"><i
+                    class="ph-bold ph-x text-2xl"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto bg-gray-50/50">
+            <div class="container mx-auto px-4 md:px-6 lg:px-8 max-w-4xl py-8">
+                <div id="search-empty-state" class="text-center py-20">
+                    <i class="ph-duotone ph-magnifying-glass text-6xl text-gray-200 mb-4"></i>
+                    <p class="text-textmuted text-lg">Nhập sản phẩm cần tìm kiếm</p>
+                </div>
+                <div id="search-results-kits" class="hidden mb-12">
+                    <h3 class="font-bold text-primary mb-6 flex items-center gap-2"><i
+                            class="ph-fill ph-package text-accent"></i> KITS LIÊN QUAN</h3>
+                    <div id="search-kits-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                </div>
+                <div id="search-results-products" class="hidden">
+                    <h3 class="font-bold text-primary mb-6 flex items-center gap-2"><i
+                            class="ph-fill ph-shopping-bag text-accent"></i> Sản phẩm liên quan</h3>
+                    <div id="search-products-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                </div>
+                <div id="search-no-results" class="hidden text-center py-20">
+                    <p class="text-textmuted text-lg">Không tìm thấy sản phẩm.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ORDER TRACKING MODAL -->
+    <div id="tracking-modal" class="fixed inset-0 z-[90] hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-primary/90 backdrop-blur-md transition-opacity" id="tracking-overlay"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div id="tracking-modal-content"
+                    class="relative transform overflow-hidden rounded-[2rem] bg-white w-full max-w-md shadow-2xl">
+
+                    <!-- Header -->
+                    <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-cream">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white text-lg">
+                                <i class="ph-fill ph-package"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-primary">Tra cứu đơn hàng</h2>
+                        </div>
+                        <button id="close-tracking-btn"
+                            class="w-10 h-10 flex items-center justify-center bg-white rounded-full text-gray-500 hover:bg-gray-200 transition-colors shadow-sm hover-target"
+                            data-cursor="CLOSE">
+                            <i class="ph-bold ph-x text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Screen 1: Phone Input -->
+                    <div id="tracking-screen-1" class="p-6 md:p-8">
+                        <div class="text-center mb-8">
+                            <div
+                                class="w-20 h-20 mx-auto bg-softgreen rounded-full flex items-center justify-center mb-4">
+                                <i class="ph-duotone ph-magnifying-glass text-4xl text-primary"></i>
+                            </div>
+                            <p class="text-textmuted text-sm">Nhập số điện thoại bạn đã dùng khi đặt hàng để tra cứu
+                                trạng thái đơn.</p>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-textdark mb-2">Số điện thoại</label>
+                            <div class="relative">
+                                <i
+                                    class="ph-bold ph-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-textmuted"></i>
+                                <input type="tel" id="tracking-phone-input"
+                                    class="w-full pl-11 pr-4 py-3.5 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 outline-none transition-colors text-lg font-semibold tracking-wide"
+                                    placeholder="0901 234 567" maxlength="11">
+                            </div>
+                        </div>
+                        <p id="tracking-error"
+                            class="text-sm text-red-500 mb-4 hidden flex items-center gap-2 bg-red-50 px-4 py-3 rounded-xl">
+                            <i class="ph-bold ph-warning-circle text-lg"></i>
+                            <span>Không tìm thấy đơn hàng. Vui lòng kiểm tra lại số điện thoại!</span>
+                        </p>
+                        <button id="tracking-search-btn"
+                            class="w-full bg-primary text-white py-4 rounded-xl font-bold text-base hover:bg-accent transition-colors shadow-lg flex items-center justify-center gap-2 hover-target"
+                            data-cursor="FIND">
+                            <i class="ph-bold ph-magnifying-glass"></i> TÌM ĐƠN
+                        </button>
+                    </div>
+
+                    <!-- Screen 2: Order Result -->
+                    <div id="tracking-screen-2" class="hidden">
+                        <div class="p-6 md:p-8">
+                            <!-- Order ID & Carrier -->
+                            <div
+                                class="flex items-center justify-between bg-cream p-4 rounded-2xl mb-6 border border-softgreen/50">
+                                <div>
+                                    <div class="text-xs font-bold text-textmuted uppercase tracking-wider mb-1">Mã đơn
+                                        hàng</div>
+                                    <div id="tracking-order-id"
+                                        class="text-xl font-extrabold text-primary tracking-wider">RK-00000</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs font-bold text-textmuted uppercase tracking-wider mb-1">Vận
+                                        chuyển</div>
+                                    <div class="flex items-center gap-1.5">
+                                        <i class="ph-fill ph-truck text-accent"></i>
+                                        <span class="text-sm font-bold text-primary">GHN</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Timeline -->
+                            <div class="mb-6">
+                                <h4
+                                    class="text-sm font-bold text-primary uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <i class="ph-fill ph-clock-countdown text-accent"></i> Trạng thái vận chuyển
+                                </h4>
+                                <div class="relative pl-8">
+                                    <!-- Timeline line -->
+                                    <div
+                                        class="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-accent to-softgreen">
+                                    </div>
+
+                                    <!-- Step 2: Đang giao hàng (Active) -->
+                                    <div class="relative mb-6">
+                                        <div
+                                            class="absolute -left-8 top-0 w-6 h-6 bg-accent rounded-full flex items-center justify-center shadow-md">
+                                            <i class="ph-bold ph-truck text-white text-xs"></i>
+                                        </div>
+                                        <div class="bg-accent/5 border border-accent/20 p-4 rounded-xl">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="font-bold text-primary text-sm">Đang giao hàng</span>
+                                                <span
+                                                    class="text-[10px] font-bold bg-accent text-white px-2 py-0.5 rounded-full uppercase">Hiện
+                                                    tại</span>
+                                            </div>
+                                            <p class="text-xs text-textmuted">Đơn hàng đang được shipper giao đến địa
+                                                chỉ của bạn.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 1: Đã xác nhận (Completed) -->
+                                    <div class="relative">
+                                        <div
+                                            class="absolute -left-8 top-0 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                            <i class="ph-bold ph-check text-white text-xs"></i>
+                                        </div>
+                                        <div class="p-4">
+                                            <span class="font-bold text-primary text-sm">Đã xác nhận đơn hàng</span>
+                                            <p class="text-xs text-textmuted mt-1">Đơn hàng đã được xác nhận và chuyển
+                                                cho đơn vị vận chuyển GHN (Giao Hàng Nhanh).</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recipient Info -->
+                            <div class="bg-gray-50 rounded-2xl p-4 mb-6 space-y-3 border border-gray-100">
+                                <h4
+                                    class="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-2">
+                                    <i class="ph-fill ph-user text-accent"></i> Thông tin người nhận
+                                </h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-3 text-sm">
+                                        <i class="ph ph-user text-textmuted"></i>
+                                        <span id="tracking-name" class="text-textdark font-medium">—</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 text-sm">
+                                        <i class="ph ph-phone text-textmuted"></i>
+                                        <span id="tracking-phone" class="text-textdark font-medium">—</span>
+                                    </div>
+                                    <div class="flex items-start gap-3 text-sm">
+                                        <i class="ph ph-map-pin text-textmuted mt-0.5"></i>
+                                        <span id="tracking-address" class="text-textdark font-medium">—</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total -->
+                            <div
+                                class="flex items-center justify-between bg-primary text-white p-4 rounded-2xl mb-6 shadow-md">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider text-softgreen/80 font-bold">Thanh toán
+                                        COD</div>
+                                    <div class="text-xs text-softgreen/60 mt-0.5">Thanh toán khi nhận hàng</div>
+                                </div>
+                                <div id="tracking-total" class="text-2xl font-extrabold text-accent">0₫</div>
+                            </div>
+
+                            <!-- Back button -->
+                            <button id="tracking-back-btn"
+                                class="w-full bg-gray-100 text-primary py-4 rounded-xl font-bold text-base hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 hover-target"
+                                data-cursor="BACK">
+                                <i class="ph-bold ph-arrow-left"></i> TRA CỨU SỐ KHÁC
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script src="js/script.js"></script>
+</body>
+
+</html>
