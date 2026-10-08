@@ -5,6 +5,7 @@ html {
 }
 
 body {
+    font-family: 'Roboto', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     /* Hide native cursor for custom cursor */
@@ -91,9 +92,17 @@ a, button, input, textarea, .hover-target {
     clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
 }
 
-/* Product Card Image Mask for GSAP */
+/* Product Card */
+.kit-card {
+    opacity: 1;
+    transform: translateZ(0);
+    will-change: transform, opacity;
+}
+
+/* Product Card Image Wrapper */
 .kit-card-image-wrapper {
-    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    position: relative;
+    overflow: hidden;
 }
 
 /* FAQ Accordion */
